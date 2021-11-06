@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 // LogOut
 // @Description 登出或注销
 // @Router /api/logout [delete]
-func LogOut(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func LogOut(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form LogOutType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)

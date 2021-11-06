@@ -3,6 +3,7 @@ package resource
 import (
 	"github.com/jinzhu/gorm"
 	"techtrainingcamp-security-10/internal/route/middleware"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 var server resource
@@ -12,6 +13,7 @@ type resource struct {
 	DbW     *gorm.DB
 	Redis   *Redis
 	Middles middleware.Middleware
+	Service service.Service
 }
 
 func NewServer() (*resource, error) {
@@ -20,7 +22,7 @@ func NewServer() (*resource, error) {
 	dbReadOpts := &MySQLOpts{
 		Address:  "127.0.0.1:3306",
 		User:     "root",
-		Password: "",
+		Password: "admin",
 		Name:     "techtrainingcamp",
 		// 连接信息
 	}
@@ -44,8 +46,9 @@ func NewServer() (*resource, error) {
 	}
 	server.Redis = NewRedis(redisOpts)
 	// 3. Middleware
-	server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR)
-
+	//server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR)
+	// 4. Service
+	server.Service = service.New(server.Redis.Conn, server.DbR)
 	return &server, nil
 }
 

@@ -126,7 +126,7 @@ func TestMysql(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
 		//})
 		//code,message := LoginByUserName(dbRead,"小明","123456")
 		//code,message := LoginByPhoneNumber(cache,dbRead,"12","123456")
-
+		dbRead.AutoMigrate(&UserTable{})
 		InsertSessionId(cache, "123", "123")
 		code, message := LogOutBySessionID(cache, dbRead, "123", 2)
 		context.JSON(200, gin.H{

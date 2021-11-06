@@ -12,7 +12,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	router, err := route.NewRoute(server.Redis.Conn, server.DbR)
+	router, err := route.NewRoute(server.Service)
 	if err != nil {
 		fmt.Println(err)
 		return

@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 // Register
 // @Description 注册用户
 // @Router /api/register [post]
-func Register(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func Register(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form RegisterType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)

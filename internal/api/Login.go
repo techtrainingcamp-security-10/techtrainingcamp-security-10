@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 // LoginUID
 // @Description 用户名登录
 // @Router /api/login_uid [post]
-func LoginUID(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func LoginUID(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form LoginUIDType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
@@ -47,7 +46,7 @@ func LoginUID(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
 // LoginPhone
 // @Description 手机登录
 // @Router /api/login_phone [post]
-func LoginPhone(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func LoginPhone(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form LoginPhoneType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)

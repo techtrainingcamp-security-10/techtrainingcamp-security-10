@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 // ApplyCode
 // @Description 获取验证码
 // @Router /api/apply_code [get]
-func ApplyCode(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func ApplyCode(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form ApplyCodeType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)

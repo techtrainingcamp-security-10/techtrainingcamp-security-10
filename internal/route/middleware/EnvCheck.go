@@ -3,8 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/gomodule/redigo/redis"
-	"github.com/jinzhu/gorm"
+	"techtrainingcamp-security-10/internal/route/service"
 )
 
 type EnvironmentType struct {
@@ -16,7 +15,7 @@ type RequestType struct {
 	Environment EnvironmentType `json:"Environment" binding:"required"`
 }
 
-func EnvCheck(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
+func EnvCheck(s service.Service) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 环境检测
 		if envCheck(c) {
@@ -38,7 +37,6 @@ func EnvCheck(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
 }
 
 func envCheck(c *gin.Context) bool {
-	return true //测试接口用
 	var form RequestType
 	if err := c.ShouldBindBodyWith(&form, binding.JSON); err == nil {
 		// 举个栗子
