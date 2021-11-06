@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -26,4 +27,9 @@ func NewDB(opts *MySQLOpts) (*gorm.DB, error) {
 		return nil, err
 	}
 	return db, err
+}
+
+func check(cache *redis.Pool) bool {
+	cache.Get().Do("get", "1")
+	return true
 }

@@ -39,5 +39,6 @@ type LogOutType struct {
 type UserTable struct {
 	UserName    string `json:"UserName" binding:"required"`
 	Password    string `json:"Password" binding:"required"`
-	PhoneNumber uint   `json:"PhoneNumber" binding:"required"`
+	PhoneNumber string `json:"PhoneNumber" binding:"required"`
+	Salt        string `json:"Salt" binding:"required"`
 }
