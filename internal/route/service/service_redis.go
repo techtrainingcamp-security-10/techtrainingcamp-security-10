@@ -24,6 +24,8 @@ func (s *service) GetVerifyCode(phoneNumber string) string {
 	return data
 }
 
+// TODO 登录注册成功后删除验证码
+
 // InsertSessionId
 // @Description 插入SessionId
 func (s *service) InsertSessionId(phoneNumber string, sessionID string) bool {
@@ -34,16 +36,22 @@ func (s *service) InsertSessionId(phoneNumber string, sessionID string) bool {
 	return true
 }
 
+// GetPhoneNumberBySessionId
+// @Description 通过SessionId获取手机号
+func (s *service) GetPhoneNumberBySessionId(sessionID string) string {
+	data, err := redis.String(s.cache.Get().Do("get", sessionID+SplitChar+"SessionId"))
+	if err != nil {
+		return "nil"
+	}
+	return data
+}
+
 // DeleteSessionId
-// @Description 删除SessionId
-func (s *service) DeleteSessionId(sessionID string) (int, string) {
-	phoneNumber, err1 := redis.String(s.cache.Get().Do("get", sessionID+SplitChar+"SessionId"))
-	if err1 != nil {
-		return -1, ""
+// @Description 删除SessionId记录
+func (s *service) DeleteSessionId(sessionID string) bool {
+	_, err := redis.Int(s.cache.Get().Do("del", sessionID+SplitChar+"SessionId"))
+	if err != nil {
+		return false
 	}
-	data, err2 := redis.Int(s.cache.Get().Do("del", sessionID+SplitChar+"SessionId"))
-	if err2 != nil {
-		return -2, ""
-	}
-	return data, phoneNumber
+	return true
 }

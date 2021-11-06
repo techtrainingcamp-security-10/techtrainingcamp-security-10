@@ -4,77 +4,141 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"strconv"
 	"techtrainingcamp-security-10/internal/route/service"
 )
 
-// LoginUID
+// LoginByUID
 // @Description 用户名登录
 // @Router /api/login_uid [post]
-func LoginUID(s service.Service) gin.HandlerFunc {
+func LoginByUID(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form LoginUIDType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
-			// 实现具体业务逻辑
-			context.JSON(201, gin.H{
-				// "checkRev": form,
-				"Code":      0,
-				"Message":   "登录成功",
-				"SessionID": 123456,
-				"Data": gin.H{
-					"SessionID":    123456,
-					"ExpireTime":   180,
-					"DecisionType": 0,
-				},
-			})
+			code, message, phoneNumber := LoginByUIDLogic(form.UserName, form.Password, s)
+
+			if code == FailedCode {
+
+				// TODO 调用失败次数统计决定 DecisionType
+				decisionType := Normal
+
+				context.JSON(POSTFailedCode, gin.H{
+					"Code":      FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": decisionType,
+					},
+				})
+			} else {
+
+				// TODO 生成 sessionID 及 失效时间
+				sessionId := "123456"
+				expireTime := service.SessionIdExpireTime
+
+				s.InsertSessionId(phoneNumber, sessionId)
+				context.JSON(POSTSuccessCode, gin.H{
+					"Code":      SuccessCode,
+					"Message":   LoginSuccess,
+					"SessionID": sessionId,
+					"Data": gin.H{
+						"SessionID":    sessionId,
+						"ExpireTime":   expireTime,
+						"DecisionType": Normal,
+					},
+				})
+			}
 		} else {
 			fmt.Println(err)
-			context.JSON(400, gin.H{
-				// "checkRev": form,
-				"Code":    1,
-				"Message": "用户名或者密码不对",
-				"Data": gin.H{
-					"SessionID":    "",
-					"ExpireTime":   "",
-					"DecisionType": 1, // 1表示需要用户通过滑块验证，通过后才能注册，2表示需要用户过一段时间，才能重新注册，3表示这个用户不能注册
-				},
-			})
 		}
 	}
 }
 
-// LoginPhone
+// LoginByUIDLogic
+// @Description 用户名登录验证逻辑
+func LoginByUIDLogic(UserName string, Password string, s service.Service) (int, string, string) {
+	user := s.QueryByUserName(UserName)
+
+	// TODO 校验密码
+	PasswordAddSalt := Password
+
+	switch {
+	case user == (service.UserTable{}): // 用户名不存在
+		return FailedCode, UserNameNotRegister, ""
+	case PasswordAddSalt != user.Password: // 密码错误
+		return FailedCode, LoginFailed, ""
+	default:
+		return SuccessCode, LoginSuccess, user.PhoneNumber
+	}
+}
+
+// LoginByPhone
 // @Description 手机登录
 // @Router /api/login_phone [post]
-func LoginPhone(s service.Service) gin.HandlerFunc {
+func LoginByPhone(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form LoginPhoneType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
-			// 实现具体业务逻辑
-			context.JSON(200, gin.H{
-				// "checkRev": form,
-				"Code":      0,
-				"Message":   "登录成功",
-				"SessionID": 123456,
-				"Data": gin.H{
-					"SessionID":    123456,
-					"ExpireTime":   180,
-					"DecisionType": 0,
-				},
-			})
+			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
+			code, message := LoginByPhoneLogic(phoneNumber, form.VerifyCode, s)
+
+			if code == FailedCode {
+
+				// TODO 调用失败次数统计决定 DecisionType
+				decisionType := Normal
+
+				context.JSON(POSTFailedCode, gin.H{
+					"Code":      FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": decisionType,
+					},
+				})
+			} else {
+
+				// TODO 手机验证码失效
+
+				// TODO 生成 sessionID 及 失效时间
+				sessionId := "123456"
+				expireTime := service.SessionIdExpireTime
+
+				s.InsertSessionId(phoneNumber, sessionId)
+				context.JSON(POSTSuccessCode, gin.H{
+					"Code":      SuccessCode,
+					"Message":   LoginSuccess,
+					"SessionID": sessionId,
+					"Data": gin.H{
+						"SessionID":    sessionId,
+						"ExpireTime":   expireTime,
+						"DecisionType": Normal,
+					},
+				})
+			}
 		} else {
 			fmt.Println(err)
-			context.JSON(200, gin.H{
-				// "checkRev": form,
-				"Code":    1,
-				"Message": "用户名或者密码不对",
-				"Data": gin.H{
-					"SessionID":    "",
-					"ExpireTime":   "",
-					"DecisionType": 1, // 1表示需要用户通过滑块验证，通过后才能注册，2表示需要用户过一段时间，才能重新注册，3表示这个用户不能注册
-				},
-			})
 		}
+	}
+}
+
+// LoginByPhoneLogic
+// @Description 手机号登录验证逻辑
+func LoginByPhoneLogic(phoneNumber string, verifyCode string, s service.Service) (int, string) {
+	verifyCodeResult := s.GetVerifyCode(phoneNumber)
+	switch {
+	case verifyCodeResult == "nil": // 验证码不合法
+		return FailedCode, VerifyCodeInvalid
+	case verifyCodeResult != verifyCode: // 验证码不正确
+		return FailedCode, VerifyCodeError
+	case s.QueryByPhoneNumber(phoneNumber) == (service.UserTable{}): // 用户不存在
+		return FailedCode, PhoneNumberNotRegister
+	default:
+		return SuccessCode, LoginSuccess
 	}
 }

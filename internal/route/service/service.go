@@ -21,14 +21,12 @@ type Service interface {
 	QueryByUserName(userName string) UserTable
 	QueryByPhoneNumber(phoneNumber string) UserTable
 	DeleteUserByPhoneNumber(phoneNumber string) bool
-	InsertUser(verifyCode string, user UserTable) (int, string)
-	LoginByUserName(userName string, password string) (int, string)
-	LoginByPhoneNumber(phoneNumber string, verifyCode string) (int, string)
-	LogOutBySessionID(sessionID string, actionType int) (int, string)
+	InsertUser(user UserTable) error
 	InsertVerifyCode(phoneNumber string, verifyCode string) bool
 	GetVerifyCode(phoneNumber string) string
 	InsertSessionId(phoneNumber string, sessionID string) bool
-	DeleteSessionId(sessionID string) (int, string)
+	GetPhoneNumberBySessionId(sessionID string) string
+	DeleteSessionId(sessionID string) bool
 }
 
 func New(cache *redis.Pool, db *gorm.DB) Service {

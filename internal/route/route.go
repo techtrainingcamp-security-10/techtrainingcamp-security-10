@@ -18,8 +18,8 @@ func NewRoute(s service.Service) (*gin.Engine, error) {
 		// 2. Register
 		router.POST("/api/register", api.Register(s))
 		// 3. Login
-		router.POST("/api/login_uid", api.LoginUID(s))
-		router.POST("/api/login_phone", api.LoginPhone(s))
+		router.POST("/api/login_uid", api.LoginByUID(s))
+		router.POST("/api/login_phone", api.LoginByPhone(s))
 		// 4. LogOut
 		router.DELETE("/api/logout", api.LogOut(s))
 	}
