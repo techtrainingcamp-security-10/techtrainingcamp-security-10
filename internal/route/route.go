@@ -23,6 +23,10 @@ func NewRoute(cache *redis.Pool, dbRead *gorm.DB) (*gin.Engine, error) {
 		router.POST("/api/login_phone", api.LoginPhone(cache, dbRead))
 		// 4. LogOut
 		router.DELETE("/api/logout", api.LogOut(cache, dbRead))
+
+		//5. Test redis and mysql
+		router.GET("/api/test_redis", api.TestRedis(cache, dbRead))
+		router.GET("/api/test_mysql", api.TestMysql(cache, dbRead))
 	}
 	return router, nil
 }
