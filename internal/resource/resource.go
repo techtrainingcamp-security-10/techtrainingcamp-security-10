@@ -1,7 +1,6 @@
 package resource
 
 import (
-	"fmt"
 	"techtrainingcamp-security-10/internal/route/middleware"
 
 	"github.com/jinzhu/gorm"
@@ -18,7 +17,6 @@ type resource struct {
 
 func NewServer() (*resource, error) {
 	cfg, err := GetConfig()
-	fmt.Printf("%v\n", cfg)
 	if err != nil {
 		return &server, err
 	}
