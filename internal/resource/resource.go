@@ -30,6 +30,8 @@ func NewServer() (*resource, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	server.DbR.AutoMigrate(&service.UserTable{})
 	/*dbWriteOpts := &MySQLOpts{
 		Address: "127.0.0.1:1234",
 		// 连接信息

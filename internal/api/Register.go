@@ -5,7 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"strconv"
+	"techtrainingcamp-security-10/internal/constants"
 	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/utils"
 )
 
 // Register
@@ -13,18 +15,17 @@ import (
 // @Router /api/register [post]
 func Register(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var form RegisterType
+		var form constants.RegisterType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
 			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
 			code, message := RegisterLogic(form, s)
-			if code == FailedCode {
+			if code == constants.FailedCode {
 
-				// TODO 调用失败次数统计决定 DecisionType
-				decisionType := Normal
+				decisionType := utils.CheckFailRecords(s, context.Request.RequestURI, context.Request.Method, form.UserName)
 
-				context.JSON(POSTFailedCode, gin.H{
-					"Code":    FailedCode,
+				context.JSON(constants.POSTFailedCode, gin.H{
+					"Code":    constants.FailedCode,
 					"Message": message,
 					"Data": gin.H{
 						"SessionID":    "",
@@ -40,15 +41,17 @@ func Register(s service.Service) gin.HandlerFunc {
 				sessionId := "123456"
 				expireTime := service.SessionIdExpireTime
 
-				s.InsertSessionId(phoneNumber, sessionId)
-				context.JSON(POSTSuccessCode, gin.H{
+				utils.ClearFailRecords(s, context.Request.RequestURI, context.Request.Method, strconv.Itoa(int(form.PhoneNumber)))
 
-					"Code":    SuccessCode,
-					"Message": RegisterSuccess,
+				s.InsertSessionId(phoneNumber, sessionId)
+				context.JSON(constants.POSTSuccessCode, gin.H{
+
+					"Code":    constants.SuccessCode,
+					"Message": constants.RegisterSuccess,
 					"Data": gin.H{
 						"SessionID":    sessionId,
 						"ExpireTime":   expireTime,
-						"DecisionType": Normal,
+						"DecisionType": constants.Normal,
 					},
 				})
 			}
@@ -60,18 +63,18 @@ func Register(s service.Service) gin.HandlerFunc {
 
 // RegisterLogic
 // @Description 注册新用户逻辑
-func RegisterLogic(data RegisterType, s service.Service) (int, string) {
+func RegisterLogic(data constants.RegisterType, s service.Service) (int, string) {
 	//测试验证码是否有效
 	verifyCodeResult := s.GetVerifyCode(strconv.Itoa(int(data.PhoneNumber)))
 	switch {
 	case verifyCodeResult == "nil": // 验证码不合法
-		return FailedCode, VerifyCodeInvalid
+		return constants.FailedCode, constants.VerifyCodeInvalid
 	case verifyCodeResult != data.VerifyCode: // 验证码不正确
-		return FailedCode, VerifyCodeError
+		return constants.FailedCode, constants.VerifyCodeError
 	case s.QueryByUserName(data.UserName) != (service.UserTable{}): // 用户名已注册
-		return FailedCode, UserNameAlreadyExists
+		return constants.FailedCode, constants.UserNameAlreadyExists
 	case s.QueryByPhoneNumber(strconv.Itoa(int(data.PhoneNumber))) != (service.UserTable{}): // 手机号已注册
-		return FailedCode, PhoneNumberAlreadyExists
+		return constants.FailedCode, constants.PhoneNumberAlreadyExists
 	default:
 
 		// TODO 加密密码
@@ -87,6 +90,6 @@ func RegisterLogic(data RegisterType, s service.Service) (int, string) {
 		if err := s.InsertUser(user); err != nil {
 			fmt.Println(err)
 		}
-		return SuccessCode, RegisterSuccess
+		return constants.SuccessCode, constants.RegisterSuccess
 	}
 }

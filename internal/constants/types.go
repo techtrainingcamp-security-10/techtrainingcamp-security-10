@@ -1,4 +1,4 @@
-package api
+package constants
 
 type EnvironmentType struct {
 	IP       string `json:"IP" binding:"required"`

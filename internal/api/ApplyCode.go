@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"math/rand"
 	"strconv"
+	"techtrainingcamp-security-10/internal/constants"
 	"techtrainingcamp-security-10/internal/route/service"
 )
 
@@ -14,7 +15,7 @@ import (
 // @Router /api/apply_code [get]
 func ApplyCode(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var form ApplyCodeType
+		var form constants.ApplyCodeType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
 			validCode := RandomString(service.VerifyCodeLength, defaultLetters)
@@ -22,13 +23,13 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 			// TODO 对 PhoneNumber 判断风险
 
 			s.InsertVerifyCode(strconv.Itoa(int(form.PhoneNumber)), validCode)
-			context.JSON(GETSuccessCode, gin.H{
-				"Code":    SuccessCode,
-				"Message": RequestSuccess,
+			context.JSON(constants.GETSuccessCode, gin.H{
+				"Code":    constants.SuccessCode,
+				"Message": constants.RequestSuccess,
 				"Data": gin.H{
 					"VerifyCode":   validCode,
 					"ExpireTime":   service.SessionIdExpireTime,
-					"DecisionType": Normal,
+					"DecisionType": constants.Normal,
 				},
 			})
 		} else {
