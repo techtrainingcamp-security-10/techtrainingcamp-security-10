@@ -1,8 +1,9 @@
 package resource
 
 import (
-	"github.com/jinzhu/gorm"
 	"techtrainingcamp-security-10/internal/route/middleware"
+
+	"github.com/jinzhu/gorm"
 )
 
 var server resource
@@ -15,15 +16,12 @@ type resource struct {
 }
 
 func NewServer() (*resource, error) {
-	var err error
-	// 1. database
-	dbReadOpts := &MySQLOpts{
-		Address:  "127.0.0.1:3306",
-		User:     "root",
-		Password: "",
-		Name:     "techtrainingcamp",
-		// 连接信息
+	cfg, err := GetConfig()
+	if err != nil {
+		return &server, err
 	}
+	// 1. database
+	dbReadOpts := &cfg.Mysql
 	server.DbR, err = NewDB(dbReadOpts)
 	if err != nil {
 		return nil, err
@@ -38,10 +36,7 @@ func NewServer() (*resource, error) {
 	//}
 
 	// 2. cache
-	redisOpts := &RedisOpts{
-		Host: "127.0.0.1:6379",
-		// 连接信息
-	}
+	redisOpts := &cfg.Redis
 	server.Redis = NewRedis(redisOpts)
 	// 3. Middleware
 	server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR)

@@ -1,0 +1,7 @@
+mysql:
+  address: 0.0.0.0:0
+  user: usernamehere
+  password: passwordhere
+  name: namehere
+redis:
+  host: 0.0.0.0:0
