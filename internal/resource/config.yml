@@ -1,0 +1,12 @@
+mysqlread:
+  address: 127.0.0.1:3307
+  user: root
+  password: 
+  name: techtrainingcamp
+mysqlwrite:
+  address: 127.0.0.1:3306
+  user: root
+  password:
+  name: techtrainingcamp
+redis:
+  host: 127.0.0.1:6379
