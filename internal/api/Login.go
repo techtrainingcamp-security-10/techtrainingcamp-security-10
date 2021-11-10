@@ -37,7 +37,7 @@ func LoginByUID(s service.Service) gin.HandlerFunc {
 				})
 			} else {
 
-				// TODO 生成 sessionID 及 失效时间
+				// 生成 sessionID 及 失效时间
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
@@ -104,7 +104,7 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 					},
 				})
 			} else {
-				// TODO 生成 sessionID 及 失效时间
+				// 生成 sessionID 及 失效时间
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 

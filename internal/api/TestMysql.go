@@ -74,7 +74,7 @@ package api
 //		return 1, LoginFailed
 //	}
 //
-//	//TODO 哈希算法判断密码是否正确
+//	// 哈希算法判断密码是否正确
 //	if password == user.Password {
 //		return 0, LoginSuccess
 //	} else {

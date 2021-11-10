@@ -34,8 +34,8 @@ func Register(s service.Service) gin.HandlerFunc {
 				})
 			} else {
 
-				// TODO 生成 sessionID 及 失效时间
-				sessionId := "123456"
+				// 生成 sessionID 及 失效时间
+				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
 				s.InsertSessionId(phoneNumber, sessionId)
