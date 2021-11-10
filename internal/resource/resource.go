@@ -2,6 +2,7 @@ package resource
 
 import (
 	"techtrainingcamp-security-10/internal/route/middleware"
+	"techtrainingcamp-security-10/internal/route/service"
 
 	"github.com/jinzhu/gorm"
 )
@@ -13,6 +14,7 @@ type resource struct {
 	DbW     *gorm.DB
 	Redis   *Redis
 	Middles middleware.Middleware
+	Service service.Service
 }
 
 func NewServer() (*resource, error) {
