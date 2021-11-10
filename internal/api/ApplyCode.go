@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -18,6 +19,8 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 		var form ApplyCodeType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
+			// 基于时间戳的随机种子
+			rand.Seed(time.Now().UnixNano())
 			validCode := RandomString(service.VerifyCodeLength, defaultLetters)
 
 			// TODO 对 PhoneNumber 判断风险
