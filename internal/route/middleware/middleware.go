@@ -8,7 +8,8 @@ import (
 
 type middleware struct {
 	cache *redis.Pool
-	db    *gorm.DB
+	dbR   *gorm.DB
+	dbW   *gorm.DB
 	// 具体功能
 	service Service
 }
@@ -20,11 +21,12 @@ type Middleware interface {
 	// 实现功能接口
 }
 
-func NewMiddleware(cache *redis.Pool, db *gorm.DB) Middleware {
+func NewMiddleware(cache *redis.Pool, dbR *gorm.DB, dbW *gorm.DB) Middleware {
 	return &middleware{
 		cache:   cache,
-		db:      db,
-		service: New(cache, db),
+		dbR:     dbR,
+		dbW:     dbW,
+		service: New(cache, dbR, dbW),
 	}
 }
 

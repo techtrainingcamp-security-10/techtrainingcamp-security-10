@@ -27,6 +27,9 @@ func NewRoute(cache *redis.Pool, dbRead *gorm.DB) (*gin.Engine, error) {
 		//5. Test redis and mysql
 		router.GET("/api/test_redis", api.TestRedis(cache, dbRead))
 		router.GET("/api/test_mysql", api.TestMysql(cache, dbRead))
+
+		//6.Test nginx
+		router.GET("/api/nginx", api.TestNginx(cache, dbRead))
 	}
 	return router, nil
 }

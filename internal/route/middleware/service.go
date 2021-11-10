@@ -10,7 +10,8 @@ import (
 )
 
 type service struct {
-	db    *gorm.DB
+	dbR   *gorm.DB
+	dbW   *gorm.DB
 	cache *redis.Pool
 }
 
@@ -31,16 +32,17 @@ type Service interface {
 func (s *service) Create(Data *api.UserTable) (err error) {
 	// 建表
 	// s.db.AutoMigrate(&api.RegisterType{})
-	res := s.db.Create(Data)
+	res := s.dbW.Create(Data)
 	if res.Error != nil {
 		return err
 	}
 	return nil
 }
 
-func New(cache *redis.Pool, db *gorm.DB) Service {
+func New(cache *redis.Pool, dbR *gorm.DB, dbW *gorm.DB) Service {
 	return &service{
-		db:    db,
+		dbR:   dbR,
+		dbW:   dbW,
 		cache: cache,
 	}
 }
