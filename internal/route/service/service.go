@@ -1,4 +1,4 @@
-// Package middleware 增删改查操作
+// Package service 增删改查操作
 package service
 
 import (
@@ -24,6 +24,7 @@ type Service interface {
 	InsertUser(user UserTable) error
 	InsertVerifyCode(phoneNumber string, verifyCode string) bool
 	GetVerifyCode(phoneNumber string) string
+	DeleteVerifyCode(phoneNumber string) bool
 	InsertSessionId(phoneNumber string, sessionID string) bool
 	GetPhoneNumberBySessionId(sessionID string) string
 	DeleteSessionId(sessionID string) bool

@@ -104,9 +104,6 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 					},
 				})
 			} else {
-
-				// TODO 手机验证码失效
-
 				// TODO 生成 sessionID 及 失效时间
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
@@ -139,8 +136,12 @@ func LoginByPhoneLogic(phoneNumber string, verifyCode string, s service.Service)
 	case verifyCodeResult != verifyCode: // 验证码不正确
 		return FailedCode, VerifyCodeError
 	case s.QueryByPhoneNumber(phoneNumber) == (service.UserTable{}): // 用户不存在
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
 		return FailedCode, PhoneNumberNotRegister
 	default:
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
 		return SuccessCode, LoginSuccess
 	}
 }

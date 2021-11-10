@@ -24,7 +24,15 @@ func (s *service) GetVerifyCode(phoneNumber string) string {
 	return data
 }
 
-// TODO 登录注册成功后删除验证码
+// DeleteVerifyCode
+// @Description 登录注册成功后删除验证码
+func (s *service) DeleteVerifyCode(phoneNumber string) bool {
+	_, err := redis.Int(s.cache.Get().Do("del", phoneNumber+SplitChar+"VerifyCode"))
+	if err != nil {
+		return false
+	}
+	return true
+}
 
 // InsertSessionId
 // @Description 插入SessionId

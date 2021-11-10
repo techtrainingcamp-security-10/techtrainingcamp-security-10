@@ -34,8 +34,6 @@ func Register(s service.Service) gin.HandlerFunc {
 				})
 			} else {
 
-				// TODO 手机验证码失效
-
 				// TODO 生成 sessionID 及 失效时间
 				sessionId := "123456"
 				expireTime := service.SessionIdExpireTime
@@ -62,18 +60,24 @@ func Register(s service.Service) gin.HandlerFunc {
 // @Description 注册新用户逻辑
 func RegisterLogic(data RegisterType, s service.Service) (int, string) {
 	//测试验证码是否有效
-	verifyCodeResult := s.GetVerifyCode(strconv.Itoa(int(data.PhoneNumber)))
+	phoneNumber := strconv.Itoa(int(data.PhoneNumber))
+	verifyCodeResult := s.GetVerifyCode(phoneNumber)
 	switch {
 	case verifyCodeResult == "nil": // 验证码不合法
 		return FailedCode, VerifyCodeInvalid
 	case verifyCodeResult != data.VerifyCode: // 验证码不正确
 		return FailedCode, VerifyCodeError
 	case s.QueryByUserName(data.UserName) != (service.UserTable{}): // 用户名已注册
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
 		return FailedCode, UserNameAlreadyExists
 	case s.QueryByPhoneNumber(strconv.Itoa(int(data.PhoneNumber))) != (service.UserTable{}): // 手机号已注册
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
 		return FailedCode, PhoneNumberAlreadyExists
 	default:
-
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
 		// TODO 加密密码
 		PasswordAddSalt := data.Password
 		Salt := "1234"
