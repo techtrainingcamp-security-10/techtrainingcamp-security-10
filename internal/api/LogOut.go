@@ -18,13 +18,13 @@ func LogOut(s service.Service) gin.HandlerFunc {
 			code, message := LogOutLogic(form.SessionID, int(form.ActionType), s)
 			if code == FailedCode {
 				context.JSON(DELETESuccessCode, gin.H{
-					"Code":    SuccessCode,
-					"Message": message,
+					"Code":    FailedCode,
+					"Message": LogOutFailed,
 				})
 			} else {
 				context.JSON(DELETEFailedCode, gin.H{
-					"Code":    FailedCode,
-					"Message": LogOutFailed,
+					"Code":    SuccessCode,
+					"Message": message,
 				})
 			}
 		} else {
