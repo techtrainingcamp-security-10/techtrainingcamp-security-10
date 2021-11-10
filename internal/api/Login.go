@@ -2,10 +2,12 @@ package api
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"strconv"
 	"techtrainingcamp-security-10/internal/route/service"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/gofrs/uuid"
 )
 
 // LoginByUID
@@ -36,7 +38,7 @@ func LoginByUID(s service.Service) gin.HandlerFunc {
 			} else {
 
 				// TODO 生成 sessionID 及 失效时间
-				sessionId := "123456"
+				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
 				s.InsertSessionId(phoneNumber, sessionId)
@@ -106,7 +108,7 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 				// TODO 手机验证码失效
 
 				// TODO 生成 sessionID 及 失效时间
-				sessionId := "123456"
+				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
 				s.InsertSessionId(phoneNumber, sessionId)
@@ -141,4 +143,15 @@ func LoginByPhoneLogic(phoneNumber string, verifyCode string, s service.Service)
 	default:
 		return SuccessCode, LoginSuccess
 	}
+}
+
+// getSessionId
+// @Description 生成随机UUID
+func getSessionId() string {
+	id, err := uuid.NewV4()
+	if err != nil {
+		fmt.Printf("failed to generate UUID: %v\n", err)
+		return ""
+	}
+	return id.String()
 }
