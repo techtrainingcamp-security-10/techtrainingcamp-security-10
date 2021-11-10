@@ -44,7 +44,7 @@ func NewServer() (*resource, error) {
 	}
 	server.Redis = NewRedis(redisOpts)
 	// 3. Middleware
-	server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR)
+	server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR, server.DbW)
 
 	return &server, nil
 }

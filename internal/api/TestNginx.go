@@ -12,7 +12,7 @@ func TestNginx(cache *redis.Pool, dbRead *gorm.DB) gin.HandlerFunc {
 			// "checkRev": form,
 			"Code":    1,
 			"Message": "请求成功",
-			"port":    8081,
+			"port":    8080,
 		})
 	}
 }
