@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path"
 	"strings"
+	"techtrainingcamp-security-10/internal/constants"
 	"time"
 
 	"github.com/dchest/captcha"
@@ -22,13 +23,13 @@ type CaptchaType struct {
 func GetCaptcha(context *gin.Context) {
 	length := captcha.DefaultLen // 6
 	captchaId := captcha.NewLen(length)
-	var captcha CaptchaType
-	captcha.CaptchaId = captchaId
-	captcha.ImageUrl = "/captcha/" + captchaId + ".png"
+	var captchaServer CaptchaType
+	captchaServer.CaptchaId = captchaId
+	captchaServer.ImageUrl = "/captchaServer/" + captchaId + ".png"
 	if captchaId == "" {
-		context.JSON(GETFailedCode, captcha)
+		context.JSON(constants.GETFailedCode, captchaServer)
 	} else {
-		context.JSON(GETSuccessCode, captcha)
+		context.JSON(constants.GETSuccessCode, captchaServer)
 	}
 }
 
@@ -46,12 +47,12 @@ func VerifyCaptcha(context *gin.Context) {
 	captchaId := context.Param("captchaId")
 	value := context.Param("value")
 	if captchaId == "" || value == "" {
-		context.String(GETFailedCode, VerifyCodeError)
+		context.String(constants.GETFailedCode, constants.VerifyCodeError)
 	}
 	if captcha.VerifyString(captchaId, value) {
-		context.JSON(GETSuccessCode, SuccessCode)
+		context.JSON(constants.GETSuccessCode, constants.SuccessCode)
 	} else {
-		context.JSON(GETSuccessCode, FailedCode)
+		context.JSON(constants.GETSuccessCode, constants.FailedCode)
 	}
 }
 
@@ -82,10 +83,16 @@ func Serve(w http.ResponseWriter, r *http.Request, id, ext, lang string, downloa
 	switch ext {
 	case ".png":
 		w.Header().Set("Content-Type", "image/png")
-		captcha.WriteImage(&content, id, width, height)
+		err := captcha.WriteImage(&content, id, width, height)
+		if err != nil {
+			return err
+		}
 	case ".wav":
 		w.Header().Set("Content-Type", "audio/x-wav")
-		captcha.WriteAudio(&content, id, lang)
+		err := captcha.WriteAudio(&content, id, lang)
+		if err != nil {
+			return err
+		}
 	default:
 		return captcha.ErrNotFound
 	}

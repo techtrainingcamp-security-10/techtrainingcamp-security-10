@@ -1,5 +1,5 @@
 // Package utils-Password https://github.com/keep94/toolbox/blob/master/passwords/passwords.go
-package utils
+package service
 
 import (
 	"crypto/hmac"
@@ -14,7 +14,7 @@ import (
 type Password string
 
 // New creates a new Password from a plain text password.
-func New(password string) Password {
+func NewPassword(password string) Password {
 	salt := make([]byte, 8, 28)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
 		panic(err.Error())

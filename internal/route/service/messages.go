@@ -1,12 +1,10 @@
 package service
 
-import "techtrainingcamp-security-10/internal/utils"
-
 type UserTable struct {
-	UserName    string         `json:"UserName" binding:"required"`
-	Password    utils.Password `json:"Password" binding:"required"`
-	PhoneNumber string         `json:"PhoneNumber" binding:"required"`
-	Salt        string         `json:"Salt" binding:"required"`
+	UserName    string   `json:"UserName" binding:"required"`
+	Password    Password `json:"Password" binding:"required"`
+	PhoneNumber string   `json:"PhoneNumber" binding:"required"`
+	Salt        string   `json:"Salt" binding:"required"`
 }
 
 const (
