@@ -3,6 +3,7 @@ module techtrainingcamp-security-10
 go 1.17
 
 require (
+	github.com/Karshilov/sensitive-word-detect v0.0.0-20211109140647-5e90dba68c2d
 	github.com/gin-gonic/gin v1.7.4
 	github.com/gomodule/redigo v1.8.5
 	github.com/jinzhu/gorm v1.9.16
