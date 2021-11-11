@@ -51,6 +51,8 @@ const (
 	CancellationSuccess      = "注销成功"
 	RequestSuccess           = "请求成功"
 	LogOutFailed             = "登出失败"
+	PhoneNumberStateErr      = "请换个手机号试试"
+	UserNameErr              = "请换个用户名试试"
 )
 
 const (

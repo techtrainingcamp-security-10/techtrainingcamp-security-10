@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -133,6 +134,8 @@ func LoginByPhoneLogic(phoneNumber string, verifyCode string, s service.Service)
 	switch {
 	case verifyCodeResult == "nil": // 验证码不合法
 		return FailedCode, VerifyCodeInvalid
+	case utils.IsVirtualPhoneNumber(phoneNumber): // 虚拟号段
+		return FailedCode, PhoneNumberStateErr
 	case verifyCodeResult != verifyCode: // 验证码不正确
 		return FailedCode, VerifyCodeError
 	case s.QueryByPhoneNumber(phoneNumber) == (service.UserTable{}): // 用户不存在

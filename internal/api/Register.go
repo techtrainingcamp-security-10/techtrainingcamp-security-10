@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"strconv"
 	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/utils"
 )
 
 // Register
@@ -65,8 +66,14 @@ func RegisterLogic(data RegisterType, s service.Service) (int, string) {
 	switch {
 	case verifyCodeResult == "nil": // 验证码不合法
 		return FailedCode, VerifyCodeInvalid
+	case utils.IsVirtualPhoneNumber(phoneNumber): // 虚拟号段
+		return FailedCode, PhoneNumberStateErr
 	case verifyCodeResult != data.VerifyCode: // 验证码不正确
 		return FailedCode, VerifyCodeError
+	case utils.SensitiveWordsFilter.Query(data.UserName) != 0: // 用户名含敏感词
+		// 手机验证码失效
+		s.DeleteVerifyCode(phoneNumber)
+		return FailedCode, UserNameErr
 	case s.QueryByUserName(data.UserName) != (service.UserTable{}): // 用户名已注册
 		// 手机验证码失效
 		s.DeleteVerifyCode(phoneNumber)

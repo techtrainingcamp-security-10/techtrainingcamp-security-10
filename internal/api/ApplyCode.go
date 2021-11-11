@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"techtrainingcamp-security-10/internal/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,22 +20,33 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 		var form ApplyCodeType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
-			// 基于时间戳的随机种子
-			rand.Seed(time.Now().UnixNano())
-			validCode := RandomString(service.VerifyCodeLength, defaultLetters)
-
-			// TODO 对 PhoneNumber 判断风险
-
-			s.InsertVerifyCode(strconv.Itoa(int(form.PhoneNumber)), validCode)
-			context.JSON(GETSuccessCode, gin.H{
-				"Code":    SuccessCode,
-				"Message": RequestSuccess,
-				"Data": gin.H{
-					"VerifyCode":   validCode,
-					"ExpireTime":   service.SessionIdExpireTime,
-					"DecisionType": Normal,
-				},
-			})
+			// 对 PhoneNumber 判断风险
+			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
+			if utils.IsVirtualPhoneNumber(phoneNumber) {
+				context.JSON(GETSuccessCode, gin.H{
+					"Code":    FailedCode,
+					"Message": PhoneNumberStateErr,
+					"Data": gin.H{
+						"VerifyCode":   "",
+						"ExpireTime":   "",
+						"DecisionType": Normal,
+					},
+				})
+			} else {
+				// 基于时间戳的随机种子
+				rand.Seed(time.Now().UnixNano())
+				validCode := RandomString(service.VerifyCodeLength, defaultLetters)
+				s.InsertVerifyCode(phoneNumber, validCode)
+				context.JSON(GETSuccessCode, gin.H{
+					"Code":    SuccessCode,
+					"Message": RequestSuccess,
+					"Data": gin.H{
+						"VerifyCode":   validCode,
+						"ExpireTime":   service.SessionIdExpireTime,
+						"DecisionType": Normal,
+					},
+				})
+			}
 		} else {
 			fmt.Println(err)
 		}
