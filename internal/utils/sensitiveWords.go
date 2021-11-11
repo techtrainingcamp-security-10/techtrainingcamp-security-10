@@ -1,4 +1,4 @@
-package preprocess
+package utils
 
 import (
 	"github.com/Karshilov/sensitive-word-detect/automaton"
