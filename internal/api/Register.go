@@ -19,10 +19,31 @@ func Register(s service.Service) gin.HandlerFunc {
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
 			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
+			// 判断是否被频控或封禁
+			if limitType := s.GetUserLimitType(phoneNumber); limitType != 0 {
+				var message string
+				switch limitType {
+				case 2:
+					message = constants.FrequencyLimit
+				case 3:
+					message = constants.Lock
+				}
+				context.JSON(constants.POSTFailedCode, gin.H{
+					"Code":      constants.FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": limitType,
+					},
+				})
+				return
+			}
 			code, message := RegisterLogic(form, s)
 			if code == constants.FailedCode {
 
-				decisionType := utils.CheckFailRecords(s, context.Request.RequestURI, context.Request.Method, form.UserName)
+				decisionType := utils.CheckFailRecords(s, form.UserName)
 
 				context.JSON(constants.POSTFailedCode, gin.H{
 					"Code":    constants.FailedCode,
@@ -39,7 +60,7 @@ func Register(s service.Service) gin.HandlerFunc {
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
-				utils.ClearFailRecords(s, context.Request.RequestURI, context.Request.Method, strconv.Itoa(int(form.PhoneNumber)))
+				utils.ClearFailRecords(s, phoneNumber)
 
 				s.InsertSessionId(phoneNumber, sessionId)
 				context.JSON(constants.POSTSuccessCode, gin.H{

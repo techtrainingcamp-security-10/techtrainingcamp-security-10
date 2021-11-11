@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/gomodule/redigo/redis"
 	"techtrainingcamp-security-10/internal/constants"
-	"time"
 )
 
 // InsertVerifyCode
@@ -67,30 +66,41 @@ func (s *service) DeleteSessionId(sessionID string) bool {
 }
 
 // GetApiFailRecords
-// @Description 获取某一 API 调用失败记录；identifier 区别用户
-func (s *service) GetApiFailRecords(apiRoute string, apiMethod string, identifier string) []int64 {
-	conn := s.cache.Get()
-
-	data, err := conn.Do("get", identifier+SplitChar+"FailRecords"+SplitChar+apiMethod+SplitChar+apiRoute)
-	if err != nil || data == nil {
-		return make([]int64, 0)
+// @Description 获取某一 API 5s/1min 内调用失败记录；identifier 区别用户
+func (s *service) GetApiFailRecords(identifier string) (int, int) {
+	var err error
+	data5s, err := redis.Int(s.cache.Get().Do("get", identifier+SplitChar+"5s"))
+	if err != nil {
+		return 0, 0
 	}
-
-	result := make([]int64, 0, len(data.([]uint8)))
-	for _, record := range data.([]uint8) {
-		result = append(result, int64(record))
+	data1Min, err := redis.Int(s.cache.Get().Do("get", identifier+SplitChar+"60s"))
+	if err != nil {
+		return 0, 0
 	}
-
-	_ = conn.Close()
-	return result
+	return data5s, data1Min
 }
 
 // SetApiFailRecords
-// @Description 写入某一 API 调用失败记录；identifier 区别用户
-func (s *service) SetApiFailRecords(apiRoute string, apiMethod string, identifier string, records []int64) {
-	conn := s.cache.Get()
-	_, _ = conn.Do("set", identifier+SplitChar+"FailRecords"+SplitChar+apiMethod+SplitChar+apiRoute, records)
-	_ = conn.Close()
+// @Description 写入某一 API 5s/1min 内调用失败记录；identifier 区别用户
+func (s *service) SetApiFailRecords(identifier string, records5s int, records1Min int) {
+	var err error
+	_, err = s.cache.Get().Do("set", identifier+SplitChar+"5s", records5s)
+	if err != nil {
+		return
+	}
+	_, err = s.cache.Get().Do("EXPIRE", identifier+SplitChar+"5s", 5)
+	if err != nil {
+		return
+	}
+	_, err = s.cache.Get().Do("set", identifier+SplitChar+"60s", records1Min)
+	if err != nil {
+		return
+	}
+	_, err = s.cache.Get().Do("EXPIRE", identifier+SplitChar+"60s", 60)
+	if err != nil {
+		return
+	}
+
 }
 
 // GetUserLimitType
@@ -102,17 +112,9 @@ func (s *service) GetUserLimitType(identifier string) int {
 
 	if err1 != nil {
 		return constants.Normal
+	} else {
+		return limitType
 	}
-
-	if limitType == constants.FrequentLimit {
-		limitExpired, err2 := redis.Int64(conn.Do("get", identifier+SplitChar+"LimitExpiredAt"))
-		if err2 != nil || limitExpired < time.Now().Unix() {
-			s.SetUserLimitType(identifier, constants.Normal)
-			return constants.Normal
-		}
-	}
-
-	return limitType
 }
 
 // SetUserLimitType
@@ -125,7 +127,7 @@ func (s *service) SetUserLimitType(identifier string, limitType int) {
 		_, _ = conn.Do("del", identifier+SplitChar+"LimitType")
 	case constants.FrequentLimit:
 		_, _ = conn.Do("set", identifier+SplitChar+"LimitType", limitType)
-		_, _ = conn.Do("set", identifier+SplitChar+"LimitExpiredAt", time.Now().Unix() + 60 * 1000)
+		_, _ = conn.Do("EXPIRE", identifier+SplitChar+"LimitType", 10)
 	case constants.Locked:
 		_, _ = conn.Do("set", identifier+SplitChar+"LimitType", limitType)
 	}

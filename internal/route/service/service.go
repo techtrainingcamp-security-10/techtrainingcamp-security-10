@@ -28,11 +28,10 @@ type Service interface {
 	InsertSessionId(phoneNumber string, sessionID string) bool
 	GetPhoneNumberBySessionId(sessionID string) string
 	DeleteSessionId(sessionID string) bool
-	GetApiFailRecords(apiRoute string, apiMethod string, identifier string) []int64
-	SetApiFailRecords(apiRoute string, apiMethod string, identifier string, records []int64)
 	GetUserLimitType(identifier string) int
 	SetUserLimitType(identifier string, limitType int)
-
+	SetApiFailRecords(identifier string, records5s int, records1Min int)
+	GetApiFailRecords(identifier string) (int, int)
 }
 
 func New(cache *redis.Pool, db *gorm.DB) Service {

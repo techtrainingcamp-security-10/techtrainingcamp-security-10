@@ -53,6 +53,8 @@ const (
 	LogOutFailed             = "登出失败"
 	PhoneNumberStateErr      = "请换个手机号试试"
 	UserNameErr              = "请换个用户名试试"
+	FrequencyLimit           = "请稍后再试"
+	Lock                     = "你已被封"
 )
 
 const (

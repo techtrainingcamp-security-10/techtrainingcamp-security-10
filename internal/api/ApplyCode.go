@@ -21,8 +21,28 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 		var form constants.ApplyCodeType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
-			// 对 PhoneNumber 判断风险
 			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
+			// 判断是否被频控或封禁
+			if limitType := s.GetUserLimitType(phoneNumber); limitType != 0 {
+				var message string
+				switch limitType {
+				case 2:
+					message = constants.FrequencyLimit
+				case 3:
+					message = constants.Lock
+				}
+				context.JSON(constants.POSTFailedCode, gin.H{
+					"Code":      constants.FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": limitType,
+					},
+				})
+			}
+			// 对 PhoneNumber 判断风险
 			if utils.IsVirtualPhoneNumber(phoneNumber) {
 				context.JSON(constants.GETSuccessCode, gin.H{
 					"Code":    constants.FailedCode,

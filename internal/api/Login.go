@@ -20,12 +20,32 @@ func LoginByUID(s service.Service) gin.HandlerFunc {
 		var form constants.LoginUIDType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
+			// 判断是否被频控或封禁
+			if limitType := s.GetUserLimitType(form.UserName); limitType != 0 {
+				var message string
+				switch limitType {
+				case 2:
+					message = constants.FrequencyLimit
+				case 3:
+					message = constants.Lock
+				}
+				context.JSON(constants.POSTFailedCode, gin.H{
+					"Code":      constants.FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": limitType,
+					},
+				})
+				return
+			}
 			code, message, phoneNumber := LoginByUIDLogic(form.UserName, form.Password, s)
 
 			if code == constants.FailedCode {
 
-				decisionType := utils.CheckFailRecords(s, context.Request.RequestURI, context.Request.Method, form.UserName)
-
+				decisionType := utils.CheckFailRecords(s, form.UserName)
 				context.JSON(constants.POSTFailedCode, gin.H{
 					"Code":      constants.FailedCode,
 					"Message":   message,
@@ -42,7 +62,7 @@ func LoginByUID(s service.Service) gin.HandlerFunc {
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
-				utils.ClearFailRecords(s, context.Request.RequestURI, context.Request.Method, form.UserName)
+				utils.ClearFailRecords(s, form.UserName)
 
 				s.InsertSessionId(phoneNumber, sessionId)
 				context.JSON(constants.POSTSuccessCode, gin.H{
@@ -85,11 +105,32 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
 			phoneNumber := strconv.Itoa(int(form.PhoneNumber))
+			// 判断是否被频控或封禁
+			if limitType := s.GetUserLimitType(phoneNumber); limitType != 0 {
+				var message string
+				switch limitType {
+				case 2:
+					message = constants.FrequencyLimit
+				case 3:
+					message = constants.Lock
+				}
+				context.JSON(constants.POSTFailedCode, gin.H{
+					"Code":      constants.FailedCode,
+					"Message":   message,
+					"SessionID": "",
+					"Data": gin.H{
+						"SessionID":    "",
+						"ExpireTime":   "",
+						"DecisionType": limitType,
+					},
+				})
+				return
+			}
 			code, message := LoginByPhoneLogic(phoneNumber, form.VerifyCode, s)
 
 			if code == constants.FailedCode {
 
-				decisionType := utils.CheckFailRecords(s, context.Request.RequestURI, context.Request.Method, strconv.Itoa(int(form.PhoneNumber)))
+				decisionType := utils.CheckFailRecords(s, phoneNumber)
 
 				context.JSON(constants.POSTFailedCode, gin.H{
 					"Code":      constants.FailedCode,
@@ -106,7 +147,7 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 				sessionId := getSessionId()
 				expireTime := service.SessionIdExpireTime
 
-				utils.ClearFailRecords(s, context.Request.RequestURI, context.Request.Method, strconv.Itoa(int(form.PhoneNumber)))
+				utils.ClearFailRecords(s, phoneNumber)
 
 				s.InsertSessionId(phoneNumber, sessionId)
 				context.JSON(constants.POSTSuccessCode, gin.H{
