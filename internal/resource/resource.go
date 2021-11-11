@@ -28,12 +28,10 @@ func NewServer() (*resource, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	//server.DbR.AutoMigrate(&service.UserTable{})
 	// 2. cache
 	redisOpts := &cfg.Redis
 	server.Redis = NewRedis(redisOpts)
-	// 3. Middleware
-	server.Middles = middleware.NewMiddleware(server.Redis.Conn, server.DbR)
 	server.Service = service.New(server.Redis.Conn, server.DbR)
 	return &server, nil
 }

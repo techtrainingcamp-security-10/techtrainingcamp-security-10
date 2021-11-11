@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"techtrainingcamp-security-10/internal/constants"
 	"techtrainingcamp-security-10/internal/route/service"
 )
 
@@ -12,18 +13,18 @@ import (
 // @Router /api/logout [delete]
 func LogOut(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var form LogOutType
+		var form constants.LogOutType
 		err := context.ShouldBindBodyWith(&form, binding.JSON)
 		if err == nil {
 			code, message := LogOutLogic(form.SessionID, int(form.ActionType), s)
-			if code == FailedCode {
-				context.JSON(DELETESuccessCode, gin.H{
-					"Code":    FailedCode,
-					"Message": LogOutFailed,
+			if code == constants.FailedCode {
+				context.JSON(constants.DELETESuccessCode, gin.H{
+					"Code":    constants.FailedCode,
+					"Message": constants.LogOutFailed,
 				})
 			} else {
-				context.JSON(DELETEFailedCode, gin.H{
-					"Code":    SuccessCode,
+				context.JSON(constants.DELETEFailedCode, gin.H{
+					"Code":    constants.SuccessCode,
 					"Message": message,
 				})
 			}
@@ -38,14 +39,14 @@ func LogOut(s service.Service) gin.HandlerFunc {
 func LogOutLogic(sessionID string, actionType int, s service.Service) (int, string) {
 	phoneNumber := s.GetPhoneNumberBySessionId(sessionID)
 	if phoneNumber == "nil" {
-		return FailedCode, UserLoginStateInvalid
+		return constants.FailedCode, constants.UserLoginStateInvalid
 	}
 	if result := s.DeleteSessionId(sessionID); result == false {
-		return FailedCode, UserLoginStateInvalid
+		return constants.FailedCode, constants.UserLoginStateInvalid
 	}
 	if actionType == 2 {
 		s.DeleteUserByPhoneNumber(phoneNumber)
-		return SuccessCode, CancellationSuccess
+		return constants.SuccessCode, constants.CancellationSuccess
 	}
-	return SuccessCode, LogOutSuccess
+	return constants.SuccessCode, constants.LogOutSuccess
 }
