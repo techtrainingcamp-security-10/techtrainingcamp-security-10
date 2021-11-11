@@ -85,15 +85,13 @@ func RegisterLogic(data RegisterType, s service.Service) (int, string) {
 	default:
 		// 手机验证码失效
 		s.DeleteVerifyCode(phoneNumber)
-		// TODO 加密密码
-		PasswordAddSalt := data.Password
-		Salt := "1234"
-
+		// 加密密码 加密后前 8 位是 salt 后 20 位是哈希后的值
+		PasswordAddSalt := utils.New(data.Password)
+		fmt.Println(PasswordAddSalt)
 		user := service.UserTable{
 			UserName:    data.UserName,
 			Password:    PasswordAddSalt,
 			PhoneNumber: strconv.Itoa(int(data.PhoneNumber)),
-			Salt:        Salt,
 		}
 		if err := s.InsertUser(user); err != nil {
 			fmt.Println(err)

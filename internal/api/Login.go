@@ -64,14 +64,10 @@ func LoginByUID(s service.Service) gin.HandlerFunc {
 // @Description 用户名登录验证逻辑
 func LoginByUIDLogic(UserName string, Password string, s service.Service) (int, string, string) {
 	user := s.QueryByUserName(UserName)
-
-	// TODO 校验密码
-	PasswordAddSalt := Password
-
 	switch {
 	case user == (service.UserTable{}): // 用户名不存在
 		return FailedCode, UserNameNotRegister, ""
-	case PasswordAddSalt != user.Password: // 密码错误
+	case !user.Password.Verify(Password): // 密码错误
 		return FailedCode, LoginFailed, ""
 	default:
 		return SuccessCode, LoginSuccess, user.PhoneNumber
