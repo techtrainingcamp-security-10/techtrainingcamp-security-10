@@ -1,6 +1,9 @@
 package service
 
+import "github.com/jinzhu/gorm"
+
 type UserTable struct {
+	gorm.Model
 	UserName    string   `json:"UserName" binding:"required"`
 	Password    Password `json:"Password" binding:"required"`
 	PhoneNumber string   `json:"PhoneNumber" binding:"required"`

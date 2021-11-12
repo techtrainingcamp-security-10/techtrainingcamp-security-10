@@ -55,6 +55,8 @@ const (
 	UserNameErr              = "请换个用户名试试"
 	FrequencyLimit           = "请稍后再试"
 	Lock                     = "你已被封"
+	NoEnv                    = "请求不合法"
+	NotChinaIP               = "IP 无效"
 )
 
 const (
@@ -70,4 +72,6 @@ const (
 	SlideBar          = 1
 	FrequentLimit     = 2
 	Locked            = 3
+	NotChinaIPCode    = 1
+	NoEnvCode         = -1
 )

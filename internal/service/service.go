@@ -32,6 +32,8 @@ type Service interface {
 	SetUserLimitType(identifier string, limitType int)
 	SetApiFailRecords(identifier string, records5s int, records1Min int)
 	GetApiFailRecords(identifier string) (int, int)
+	GetIRequests(env string) int
+	SetIRequests(env string, records1Min int)
 }
 
 func New(cache *redis.Pool, db *gorm.DB) Service {
