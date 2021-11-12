@@ -136,3 +136,28 @@ func (s *service) SetUserLimitType(identifier string, limitType int) {
 	_ = conn.Close()
 
 }
+
+// GetIRequests
+// @Description 获取同一env一分钟内请求次数
+func (s *service) GetIRequests(env string) int {
+	data1Min, err := redis.Int(s.cache.Get().Do("get", env+SplitChar+"60s"))
+	if err != nil {
+		return 0
+	}
+	return data1Min
+}
+
+// SetIRequests
+// @Description 获取同一env一分钟内请求次数
+func (s *service) SetIRequests(env string, records1Min int) {
+	var err error
+	_, err = s.cache.Get().Do("set", env+SplitChar+"60s", records1Min)
+	if err != nil {
+		return
+	}
+	_, err = s.cache.Get().Do("EXPIRE", env+SplitChar+"60s", 60)
+	if err != nil {
+		return
+	}
+
+}

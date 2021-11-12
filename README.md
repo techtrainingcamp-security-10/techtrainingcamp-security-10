@@ -30,3 +30,5 @@
 | gorm        | 1.9.16| https://github.com/jinzhu/gorm            |
 | redigo      | 1.8.5 | https://github.com/gomodule/redigo        |
 | yaml        | 2.4.0 | https://github.com/go-yaml/yaml           |
+| iploc       | 1.0.2 | https://github.com/phuslu/iploc           |
+| uuid        | 4.1.0 | https://github.com/gofrs/uuid             |
