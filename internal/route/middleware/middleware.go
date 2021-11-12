@@ -10,7 +10,6 @@ type middleware struct {
 	cache *redis.Pool
 	db    *gorm.DB
 	// 具体功能
-	service Service
 }
 
 type Middleware interface {
@@ -24,7 +23,6 @@ func NewMiddleware(cache *redis.Pool, db *gorm.DB) Middleware {
 	return &middleware{
 		cache:   cache,
 		db:      db,
-		service: New(cache, db),
 	}
 }
 
