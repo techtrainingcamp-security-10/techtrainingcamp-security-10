@@ -1,9 +1,9 @@
 # 《抓到你了——具备安全防护能力的账号系统》
 ## 项目规划
 ### 后端技术栈
-- 服务：单机（分布式待定）
-- 缓存：单机（Redis)
-- 库：MySQL
+- 服务：单机（多端口模拟分布式）
+- 缓存：单机（Redis）
+- 库：MySQL（主从实现读写分离）
 - 接口：Restful
 - 风控：
   - 滑块：
@@ -22,10 +22,11 @@
 
 ### 需要实现的功能及分工
 请访问 [Projects](https://github.com/techtrainingcamp-security-10/techtrainingcamp-security-10/projects)
+
 ## 第三方依赖
 | 名称         | 版本  | 主页                                       |
 | ----------- | ----- | ----------------------------------------- |
 | gin         | 1.17  | https://github.com/gin-gonic/gin          |
 | gorm        | 1.9.16| https://github.com/jinzhu/gorm            |
 | redigo      | 1.8.5 | https://github.com/gomodule/redigo        |
-(GORM后续可以升级到v2) 
+| yaml        | 2.4.0 | https://github.com/go-yaml/yaml           |
