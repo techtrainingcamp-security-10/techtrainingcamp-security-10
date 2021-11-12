@@ -89,7 +89,7 @@ func RegisterLogic(data constants.RegisterType, s service.Service) (int, string)
 	switch {
 	case verifyCodeResult == "nil": // 验证码不合法
 		return constants.FailedCode, constants.VerifyCodeInvalid
-	case utils.IsVirtualPhoneNumber(phoneNumber): // 虚拟号段
+	case !utils.IsNormalPhoneNumber(phoneNumber): // 虚拟号段
 		return constants.FailedCode, constants.PhoneNumberStateErr
 	case verifyCodeResult != data.VerifyCode: // 验证码不正确
 		return constants.FailedCode, constants.VerifyCodeError

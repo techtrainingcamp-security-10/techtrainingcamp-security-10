@@ -43,7 +43,7 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 				})
 			}
 			// 对 PhoneNumber 判断风险
-			if utils.IsVirtualPhoneNumber(phoneNumber) {
+			if !utils.IsNormalPhoneNumber(phoneNumber) {
 				context.JSON(constants.GETSuccessCode, gin.H{
 					"Code":    constants.FailedCode,
 					"Message": constants.PhoneNumberStateErr,
