@@ -1,10 +1,11 @@
-// https://github.com/silenceper/wechat/blob/master/cache/redis.go
+// Package resource-redis https://github.com/silenceper/wechat/blob/master/cache/redis.go
 package resource
 
 import (
 	"encoding/json"
-	"github.com/gomodule/redigo/redis"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 type Redis struct {

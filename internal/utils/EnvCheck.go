@@ -1,9 +1,10 @@
-package middleware
+package utils
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"techtrainingcamp-security-10/internal/route/service"
+
+	"techtrainingcamp-security-10/internal/service"
 )
 
 type EnvironmentType struct {
