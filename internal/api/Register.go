@@ -2,11 +2,13 @@ package api
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"strconv"
+
 	"techtrainingcamp-security-10/internal/constants"
-	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/service"
 	"techtrainingcamp-security-10/internal/utils"
 )
 

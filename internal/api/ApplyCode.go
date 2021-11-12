@@ -2,15 +2,16 @@ package api
 
 import (
 	"fmt"
-	"techtrainingcamp-security-10/internal/utils"
+	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"math/rand"
-	"strconv"
+
 	"techtrainingcamp-security-10/internal/constants"
-	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/service"
+	"techtrainingcamp-security-10/internal/utils"
 )
 
 // ApplyCode
@@ -76,8 +77,9 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 
 // RandomString returns a random string with a fixed length
 // https://zhuanlan.zhihu.com/p/94684495
-var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
+//var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+// 采用纯数字手机验证码
+var defaultLetters = []rune("0123456789")
 func RandomString(n int, allowedChars ...[]rune) string {
 	var letters []rune
 	if len(allowedChars) == 0 {

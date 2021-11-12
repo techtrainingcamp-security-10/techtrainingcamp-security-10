@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gomodule/redigo/redis"
+
 	"techtrainingcamp-security-10/internal/constants"
 )
 

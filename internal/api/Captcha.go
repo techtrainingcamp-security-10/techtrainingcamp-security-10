@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"path"
 	"strings"
-	"techtrainingcamp-security-10/internal/constants"
 	"time"
 
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
+
+	"techtrainingcamp-security-10/internal/constants"
 )
 
 type CaptchaType struct {

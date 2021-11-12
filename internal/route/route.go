@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"techtrainingcamp-security-10/internal/api"
-	"techtrainingcamp-security-10/internal/route/middleware"
-	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/service"
+	"techtrainingcamp-security-10/internal/utils"
 )
 
 // NewRoute Restful 格式
 func NewRoute(s service.Service) (*gin.Engine, error) {
 	router := gin.Default()
-	router.Use(middleware.EnvCheck(s))
+	router.Use(utils.EnvCheck(s))
 	{
 		// 1. ApplyCode
 		router.GET("/api/apply_code", api.ApplyCode(s))

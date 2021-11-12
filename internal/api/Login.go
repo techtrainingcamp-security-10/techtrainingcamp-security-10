@@ -3,13 +3,14 @@ package api
 import (
 	"fmt"
 	"strconv"
-	"techtrainingcamp-security-10/internal/constants"
-	"techtrainingcamp-security-10/internal/route/service"
-	"techtrainingcamp-security-10/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gofrs/uuid"
+
+	"techtrainingcamp-security-10/internal/constants"
+	"techtrainingcamp-security-10/internal/service"
+	"techtrainingcamp-security-10/internal/utils"
 )
 
 // LoginByUID

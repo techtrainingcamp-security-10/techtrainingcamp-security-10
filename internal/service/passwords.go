@@ -1,4 +1,4 @@
-// Package utils-Password https://github.com/keep94/toolbox/blob/master/passwords/passwords.go
+// Package service-Password https://github.com/keep94/toolbox/blob/master/passwords/passwords.go
 package service
 
 import (
@@ -6,8 +6,9 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/base64"
-	"golang.org/x/crypto/pbkdf2"
 	"io"
+
+	"golang.org/x/crypto/pbkdf2"
 )
 
 // Password is a one-way encryption of a password.

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"techtrainingcamp-security-10/internal/constants"
-	"techtrainingcamp-security-10/internal/route/service"
+	"techtrainingcamp-security-10/internal/service"
 )
 
 func CheckFailRecords(s service.Service, identifier string) int {
