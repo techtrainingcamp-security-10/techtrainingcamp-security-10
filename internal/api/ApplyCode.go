@@ -1,10 +1,11 @@
 package api
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
 	"strconv"
-	"time"
+
+	// "time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -56,7 +57,7 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 				})
 			} else {
 				// 基于时间戳的随机种子
-				rand.Seed(time.Now().UnixNano())
+				// rand.Seed(time.Now().UnixNano())
 				validCode := RandomString(service.VerifyCodeLength, defaultLetters)
 				s.InsertVerifyCode(phoneNumber, validCode)
 				context.JSON(constants.GETSuccessCode, gin.H{
@@ -75,21 +76,54 @@ func ApplyCode(s service.Service) gin.HandlerFunc {
 	}
 }
 
+// 生成随机byte序列
+func RandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return b, nil
+}
+
 // RandomString returns a random string with a fixed length
 // https://zhuanlan.zhihu.com/p/94684495
-//var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
 // 采用纯数字手机验证码
-var defaultLetters = []rune("0123456789")
-func RandomString(n int, allowedChars ...[]rune) string {
-	var letters []rune
+// var defaultLetters = []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+var defaultLetters = []byte("0123456789")
+var defaultMod = byte(len(defaultLetters))
+
+// 使用crypto/rand
+func RandomString(n int, allowedChars ...[]byte) string {
+	var letters []byte
+	var mod byte
 	if len(allowedChars) == 0 {
 		letters = defaultLetters
+		mod = defaultMod
 	} else {
 		letters = allowedChars[0]
+		mod = byte(len(allowedChars[0]))
 	}
-	b := make([]rune, n)
+	b, _ := RandomBytes(n)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = letters[b[i]%mod]
 	}
 	return string(b)
 }
+
+// 使用math/rand
+// func RandomString(n int, allowedChars... []byte) string {
+// 	var letters []byte
+// 	if len(allowedChars) == 0 {
+// 		letters = defaultLetters
+// 	} else {
+// 		letters = allowedChars[0]
+// 	}
+// 	b := make([]byte, n)
+// 	for i := range b {
+// 		b[i] = letters[rand.Intn(len(letters))]
+// 	}
+// 	return string(b)
+// }

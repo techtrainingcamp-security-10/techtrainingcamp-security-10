@@ -47,13 +47,22 @@ func GetCaptchaImage(context *gin.Context) {
 func VerifyCaptcha(context *gin.Context) {
 	captchaId := context.Param("captchaId")
 	value := context.Param("value")
-	if captchaId == "" || value == "" {
-		context.String(constants.GETFailedCode, constants.VerifyCodeError)
+	if captchaId == "" {
+		context.JSON(constants.GETFailedCode, gin.H{
+			"Code":    constants.VerifyCodeError,
+			"Message": constants.VerifyCodeInvalid,
+		})
 	}
 	if captcha.VerifyString(captchaId, value) {
-		context.JSON(constants.GETSuccessCode, constants.SuccessCode)
+		context.JSON(constants.GETSuccessCode, gin.H{
+			"Code":    constants.SuccessCode,
+			"Message": constants.LoginSuccess,
+		})
 	} else {
-		context.JSON(constants.GETSuccessCode, constants.FailedCode)
+		context.JSON(constants.GETSuccessCode, gin.H{
+			"Code":    constants.FailedCode,
+			"Message": constants.VerifyCodeError,
+		})
 	}
 }
 

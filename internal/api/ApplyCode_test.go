@@ -12,11 +12,11 @@ import (
 )
 
 func TestRandomString(t *testing.T) {
-	var testLetters = []rune("0123456789")
+	var testLetters = []byte("0123456789")
 	if RandomString(6, testLetters) == RandomString(6, testLetters) {
 		t.Error("验证码应当随机")
 	}
-	testLetters = []rune("0")
+	testLetters = []byte("0")
 	if RandomString(10, testLetters) != "0000000000" {
 		t.Error("单个字符是验证码应当不随机")
 	}

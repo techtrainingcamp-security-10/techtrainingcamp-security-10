@@ -81,11 +81,11 @@ func envCheck(c *gin.Context, s service.Service) int {
 			// 同环境 1 分钟内请求 15 次 拦截
 			switch {
 			case cntTotal > 30:
-				s.SetUserLimitType(form.Environment.IP, constants.FrequentLimit)
-				return constants.FrequentLimit
-			case cntTotal > 15:
 				s.SetUserLimitType(form.Environment.IP, constants.Locked)
 				return constants.Locked
+			case cntTotal > 15:
+				s.SetUserLimitType(form.Environment.IP, constants.FrequentLimit)
+				return constants.FrequentLimit
 			default:
 				return constants.Normal
 			}
