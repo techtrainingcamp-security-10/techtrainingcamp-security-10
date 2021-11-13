@@ -89,10 +89,10 @@ func RegisterLogic(data constants.RegisterType, s service.Service) (int, string)
 	phoneNumber := strconv.Itoa(int(data.PhoneNumber))
 	verifyCodeResult := s.GetVerifyCode(phoneNumber)
 	switch {
-	case verifyCodeResult == "nil": // 验证码不合法
-		return constants.FailedCode, constants.VerifyCodeInvalid
 	case !utils.IsNormalPhoneNumber(phoneNumber): // 虚拟号段
 		return constants.FailedCode, constants.PhoneNumberStateErr
+	case verifyCodeResult == "nil": // 验证码不合法
+		return constants.FailedCode, constants.VerifyCodeInvalid
 	case verifyCodeResult != data.VerifyCode: // 验证码不正确
 		return constants.FailedCode, constants.VerifyCodeError
 	case utils.SensitiveWordsFilter.Query(data.UserName) != 0: // 用户名含敏感词
@@ -112,7 +112,6 @@ func RegisterLogic(data constants.RegisterType, s service.Service) (int, string)
 		s.DeleteVerifyCode(phoneNumber)
 		// 加密密码 加密后前 8 位是 salt 后 20 位是哈希后的值
 		PasswordAddSalt := service.NewPassword(data.Password)
-		fmt.Println(PasswordAddSalt)
 		user := service.UserTable{
 			UserName:    data.UserName,
 			Password:    PasswordAddSalt,

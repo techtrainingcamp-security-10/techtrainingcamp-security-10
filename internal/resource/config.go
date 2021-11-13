@@ -1,11 +1,10 @@
 package resource
 
 import (
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
-
-	"gopkg.in/yaml.v2"
 )
 
 type FullConfig struct {
@@ -18,7 +17,18 @@ func GetConfig() (FullConfig, error) {
 	pwd, _ := os.Getwd()
 	cfg, err := ioutil.ReadFile(path.Join(pwd, `/internal/resource/config.yml`))
 	if err != nil {
-		return config, err
+		config = FullConfig{
+			Redis: RedisOpts{
+				Host: "127.0.0.1:6379",
+			},
+			Mysql: MySQLOpts{
+				User:     "root",
+				Password: "admin",
+				Address:  "127.0.0.1:3306",
+				Name:     "techtrainingcamp",
+			},
+		}
+		return config, nil
 	}
 	err = yaml.UnmarshalStrict(cfg, &config)
 	if err != nil {
