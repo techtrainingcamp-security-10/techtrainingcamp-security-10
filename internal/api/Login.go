@@ -173,10 +173,10 @@ func LoginByPhone(s service.Service) gin.HandlerFunc {
 func LoginByPhoneLogic(phoneNumber string, verifyCode string, s service.Service) (int, string) {
 	verifyCodeResult := s.GetVerifyCode(phoneNumber)
 	switch {
-	case verifyCodeResult == "nil": // 验证码不合法
-		return constants.FailedCode, constants.VerifyCodeInvalid
 	case !utils.IsNormalPhoneNumber(phoneNumber): // 虚拟号段
 		return constants.FailedCode, constants.PhoneNumberStateErr
+	case verifyCodeResult == "nil": // 验证码不合法
+		return constants.FailedCode, constants.VerifyCodeInvalid
 	case verifyCodeResult != verifyCode: // 验证码不正确
 		return constants.FailedCode, constants.VerifyCodeError
 	case s.QueryByPhoneNumber(phoneNumber) == (service.UserTable{}): // 用户不存在
