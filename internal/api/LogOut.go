@@ -20,12 +20,12 @@ func LogOut(s service.Service) gin.HandlerFunc {
 		if err == nil {
 			code, message := LogOutLogic(form.SessionID, int(form.ActionType), s)
 			if code == constants.FailedCode {
-				context.JSON(constants.DELETESuccessCode, gin.H{
+				context.JSON(constants.DELETEFailedCode, gin.H{
 					"Code":    constants.FailedCode,
 					"Message": constants.LogOutFailed,
 				})
 			} else {
-				context.JSON(constants.DELETEFailedCode, gin.H{
+				context.JSON(constants.DELETESuccessCode, gin.H{
 					"Code":    constants.SuccessCode,
 					"Message": message,
 				})
