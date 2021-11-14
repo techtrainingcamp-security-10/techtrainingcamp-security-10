@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http/httptest"
 	"techtrainingcamp-security-10/internal/resource"
 	"testing"
+
+	"github.com/gin-gonic/gin"
 )
 
 func TestRandomString(t *testing.T) {
@@ -32,9 +33,9 @@ func TestApplyCode1(t *testing.T) {
 	server, _ := resource.NewServer()
 	s := server.Service
 	router := gin.Default()
-	method := "GET"
+	method := "POST"
 	uri := "/api/apply_code"
-	router.GET(uri, ApplyCode(s))
+	router.POST(uri, ApplyCode(s))
 
 	contextTest := make(map[string]uint)
 	contextTest["PhoneNumber"] = 13812345678
@@ -56,9 +57,9 @@ func TestApplyCode2(t *testing.T) {
 	server, _ := resource.NewServer()
 	s := server.Service
 	router := gin.Default()
-	method := "GET"
+	method := "POST"
 	uri := "/api/apply_code"
-	router.GET(uri, ApplyCode(s))
+	router.POST(uri, ApplyCode(s))
 
 	contextTest := make(map[string]uint)
 	contextTest["PhoneNumber"] = 12812345678

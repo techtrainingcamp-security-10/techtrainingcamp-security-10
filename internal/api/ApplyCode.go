@@ -17,7 +17,7 @@ import (
 
 // ApplyCode
 // @Description 获取验证码
-// @Router /api/apply_code [get]
+// @Router /api/apply_code [post]
 func ApplyCode(s service.Service) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var form constants.ApplyCodeType
