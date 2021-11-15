@@ -21,6 +21,7 @@ jobs:
         script: |
           cd /home/ubuntu/techtrainingcamp-security-10
           git pull
+          export GOPROXY=https://goproxy.io,direct
           go mod tidy
           go build -ldflags "-s -w"
           pm2 restart all
